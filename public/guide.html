@@ -261,11 +261,11 @@
             .comparison {
                 grid-template-columns: 1fr;
             }
-            
+
             header h1 {
                 font-size: 36px;
             }
-            
+
             .content {
                 padding: 20px;
             }
@@ -281,6 +281,31 @@
             text-align: center;
             padding: 30px;
             margin-top: 50px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .badge-done {
+            background: #d4edda;
+            color: #28a745;
+        }
+
+        .badge-next {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .badge-plan {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
         }
     </style>
 </head>
@@ -328,82 +353,187 @@
 
             <!-- システム全体の仕組み -->
             <h2>🌐 システム全体の仕組み</h2>
-            
+
             <h3>3つのパーツ</h3>
             <div class="phase-box">
                 <p><span class="phase-number">1</span><strong>カード（物理）</strong></p>
                 <p style="margin-left: 60px;">QRコードが印刷された金属製のカード</p>
             </div>
-            
+
             <div class="arrow">↓</div>
-            
+
             <div class="phase-box">
                 <p><span class="phase-number">2</span><strong>インターネット（Webサイト）</strong></p>
                 <p style="margin-left: 60px;">https://metalid.jp/u/000001 でアクセス</p>
             </div>
-            
+
             <div class="arrow">↓</div>
-            
+
             <div class="phase-box">
-                <p><span class="phase-number">3</span><strong>データ管理（Googleスプレッドシート）</strong></p>
-                <p style="margin-left: 60px;">誰がどんな情報を持っているかを記録</p>
+                <p><span class="phase-number">3</span><strong>データ管理（Supabase）</strong></p>
+                <p style="margin-left: 60px;">会員情報・プロフィール・認証を一元管理するデータベース</p>
             </div>
 
             <!-- データの流れ -->
-            <h2>🔄 データの流れ</h2>
+            <h2>🔄 データの流れ（QRスキャン時）</h2>
             <div class="step-box">スマホでQRスキャン</div>
             <div class="arrow">↓</div>
             <div class="step-box">metalid.jp/u/000001 にアクセス</div>
             <div class="arrow">↓</div>
-            <div class="step-box">Googleスプレッドシートから<br>「000001」の人の情報を取得</div>
+            <div class="step-box">Supabaseデータベースから<br>「000001」の会員情報を取得</div>
             <div class="arrow">↓</div>
             <div class="step-box">プロフィールページを表示</div>
 
-            <!-- Googleスプレッドシート -->
-            <h2>📊 Googleスプレッドシートって何？</h2>
+            <!-- 会員登録の仕組み -->
+            <h2>🔑 会員登録の仕組み（招待制）</h2>
             <div class="info">
-                <p><strong>Excel のオンライン版</strong>です。ここにメンバーの情報を入力します。</p>
+                <p><strong>オープン登録はできません。</strong>管理者が発行した招待URLからのみ登録できます。</p>
+            </div>
+
+            <div class="step-box">管理者が会員番号を作成 → 招待URL発行</div>
+            <div class="arrow">↓</div>
+            <div class="step-box">招待URLのQRコードを印刷して<br>金属カードと一緒に手渡す</div>
+            <div class="arrow">↓</div>
+            <div class="step-box">会員がQRスキャン → 登録ページへ</div>
+            <div class="arrow">↓</div>
+            <div class="step-box">メールアドレス＋パスワードを登録</div>
+            <div class="arrow">↓</div>
+            <div class="step-box">確認メールのリンクをクリック</div>
+            <div class="arrow">↓</div>
+            <div class="step-box">登録完了！プロフィール編集へ</div>
+
+            <!-- Supabase -->
+            <h2>🗄️ Supabaseって何？</h2>
+            <div class="info">
+                <p><strong>Firebase の代替として人気のBaaS（Backend as a Service）</strong>です。<br>データベース・認証・ストレージをまとめて提供します。</p>
             </div>
 
             <div class="table-wrapper">
                 <table>
                     <tr>
+                        <th>機能</th>
+                        <th>使い方</th>
+                    </tr>
+                    <tr>
+                        <td>📊 データベース</td>
+                        <td>会員・プロフィール・招待トークンを保存</td>
+                    </tr>
+                    <tr>
+                        <td>🔐 認証（Auth）</td>
+                        <td>メール認証によるログイン・サインアップ</td>
+                    </tr>
+                    <tr>
+                        <td>🖼️ ストレージ</td>
+                        <td>プロフィール画像のアップロード（将来対応）</td>
+                    </tr>
+                    <tr>
+                        <td>🔒 RLS</td>
+                        <td>Row Level Security：自分のデータしか編集できない</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- データ構造 -->
+            <h2>📊 データの構造</h2>
+
+            <h3>membersテーブル（会員基本情報）</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr>
                         <th>id</th>
                         <th>type</th>
-                        <th>name</th>
-                        <th>bio</th>
-                        <th>link1_label</th>
+                        <th>status</th>
+                        <th>is_admin</th>
                     </tr>
                     <tr>
-                        <td>'000001</td>
+                        <td>000001</td>
                         <td>profile</td>
+                        <td>active</td>
+                        <td>true</td>
+                    </tr>
+                    <tr>
+                        <td>000002</td>
+                        <td>profile</td>
+                        <td>active</td>
+                        <td>false</td>
+                    </tr>
+                    <tr>
+                        <td>000003</td>
+                        <td>redirect</td>
+                        <td>pending</td>
+                        <td>false</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>profilesテーブル（プロフィール詳細）</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>member_id</th>
+                        <th>molkky_name</th>
+                        <th>team_name</th>
+                        <th>bio_short</th>
+                    </tr>
+                    <tr>
+                        <td>000001</td>
                         <td>サノ</td>
                         <td>川西モルックの会</td>
-                        <td>X (個人)</td>
+                        <td>モルック歴3年</td>
                     </tr>
                     <tr>
-                        <td>'000002</td>
-                        <td>profile</td>
+                        <td>000002</td>
                         <td>太郎</td>
                         <td>大阪モルック</td>
-                        <td>Instagram</td>
+                        <td>週2で練習中</td>
                     </tr>
                 </table>
             </div>
 
             <div class="success">
-                <p><strong>メンバー追加の手順:</strong></p>
+                <p><strong>会員追加の手順:</strong></p>
                 <ol style="margin-top: 15px; margin-left: 20px;">
-                    <li>Googleスプレッドシートを開く</li>
-                    <li>新しい行に情報を入力</li>
-                    <li>保存</li>
-                    <li>完成！ → 自動的に新しいページができる</li>
+                    <li>管理者ダッシュボード → <strong>新規会員作成</strong>を開く</li>
+                    <li>会員番号・カード種別を入力して送信</li>
+                    <li>QRコードが表示される → 印刷して完成！</li>
+                    <li>会員がQRスキャンして自分で登録</li>
                 </ol>
+            </div>
+
+            <!-- カード種別 -->
+            <h2>🃏 カードの種別</h2>
+
+            <div class="comparison">
+                <div class="comparison-item comparison-good">
+                    <h3 style="color: #28a745;">📋 プロフィール型</h3>
+                    <p style="margin-top: 15px;">
+                        metalid.jp/u/000001
+                    </p>
+                    <ul style="text-align: left; margin-top: 15px;">
+                        <li>ハブページを表示</li>
+                        <li>SNSリンク・プロフィール</li>
+                        <li>将来：試合記録・バッジ</li>
+                        <li><strong>通常会員はこちら</strong></li>
+                    </ul>
+                </div>
+
+                <div class="comparison-item" style="background: #fff3cd; border: 2px solid #ffc107;">
+                    <h3 style="color: #856404;">↗️ リダイレクト型</h3>
+                    <p style="margin-top: 15px;">
+                        → 別URLへ転送
+                    </p>
+                    <ul style="text-align: left; margin-top: 15px;">
+                        <li>指定URLへ自動転送</li>
+                        <li>外部サイトへのリンク</li>
+                        <li>プロフィール不要な人向け</li>
+                        <li><strong>特殊な用途向け</strong></li>
+                    </ul>
+                </div>
             </div>
 
             <!-- カスタムドメイン -->
             <h2>🎯 カスタムドメインって何？</h2>
-            
+
             <div class="comparison">
                 <div class="comparison-item comparison-bad">
                     <h3 style="color: #dc3545;">❌ ドメインなし</h3>
@@ -416,7 +546,7 @@
                         <li>QRコードが大きくなる</li>
                     </ul>
                 </div>
-                
+
                 <div class="comparison-item comparison-good">
                     <h3 style="color: #28a745;">✅ ドメインあり</h3>
                     <p style="margin-top: 15px;">
@@ -432,7 +562,7 @@
 
             <!-- コスト -->
             <h2>💰 お金はかかるの？</h2>
-            
+
             <div class="cost-box">
                 <h3>年間コスト</h3>
                 <div class="cost-total">1,500円だけ！</div>
@@ -458,76 +588,143 @@
                         <td><strong style="color: #28a745;">0円（無料）</strong></td>
                     </tr>
                     <tr>
-                        <td>✅ Googleスプレッドシート</td>
-                        <td><strong style="color: #28a745;">0円（無料）</strong></td>
+                        <td>✅ Supabase (データベース・認証)</td>
+                        <td><strong style="color: #28a745;">0円（無料プラン）</strong></td>
                     </tr>
                 </table>
             </div>
 
-            <!-- 更新の仕方 -->
-            <h2>🔄 更新の仕方</h2>
-            
-            <h3>パターン1: メンバー追加・情報変更</h3>
+            <!-- 管理者の操作 -->
+            <h2>🔄 管理者がやること</h2>
+
+            <h3>新しいメンバーを追加する</h3>
             <div class="card">
                 <div class="step-box" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
-                    Googleスプレッドシートを開く
+                    /admin/members/new を開く
                 </div>
                 <div class="arrow">↓</div>
                 <div class="step-box" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
-                    情報を変更 or 新しい行を追加
+                    会員番号・種別を入力して「会員を作成」
                 </div>
                 <div class="arrow">↓</div>
                 <div class="step-box" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
-                    保存
+                    QRコードが表示される → 印刷
                 </div>
                 <div class="arrow">↓</div>
                 <div class="step-box" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
-                    1分以内に自動反映！
+                    金属カードと一緒に会員へ渡す
                 </div>
-                <p style="margin-top: 15px;"><strong>必要なもの:</strong> スマホかPC（Googleスプレッドシートが開ければOK）</p>
+                <p style="margin-top: 15px;"><strong>必要なもの:</strong> 管理者アカウントでログイン済みのPC/スマホ</p>
+            </div>
+
+            <h3>招待URLを再発行する</h3>
+            <div class="card">
+                <p>招待URLの有効期限は<strong>30日</strong>。期限切れの場合は会員詳細ページから再発行できます。</p>
+                <ol style="margin-top: 15px; margin-left: 20px;">
+                    <li>/admin/members → 対象の会員を選択</li>
+                    <li>「招待URLを再発行」ボタンをクリック</li>
+                    <li>新しいQRコードが表示される</li>
+                </ol>
             </div>
 
             <!-- トラブルシューティング -->
             <h2>🛠️ よくあるトラブル</h2>
-            
+
             <div class="warning">
-                <h3 style="margin: 0 0 15px 0;">Q1: ページが表示されない</h3>
-                <p><strong>原因:</strong> スプレッドシートのID設定ミス</p>
+                <h3 style="margin: 0 0 15px 0;">Q1: ページが表示されない（404エラー）</h3>
+                <p><strong>原因:</strong> membersテーブルにレコードがないか、statusがpending</p>
                 <p style="margin-top: 10px;"><strong>解決:</strong></p>
                 <ol style="margin-left: 20px; margin-top: 5px;">
-                    <li>スプレッドシートのid列を確認</li>
-                    <li><code>'000001</code> のようにシングルクォート付けてる？</li>
-                    <li>数字だけだと <code>1</code> になってしまう</li>
+                    <li>管理者ダッシュボードで会員が作成されているか確認</li>
+                    <li>会員がメール認証を完了しているか確認（status = active）</li>
                 </ol>
             </div>
 
             <div class="warning">
-                <h3 style="margin: 0 0 15px 0;">Q2: リンクが動かない</h3>
-                <p><strong>原因:</strong> URLの形式が間違ってる</p>
+                <h3 style="margin: 0 0 15px 0;">Q2: 招待URLが「無効」と表示される</h3>
+                <p><strong>原因:</strong> トークンの有効期限（30日）が切れているか、すでに使用済み</p>
                 <p style="margin-top: 10px;"><strong>解決:</strong></p>
                 <ul style="margin-left: 20px; margin-top: 5px;">
-                    <li>✅ 正しい: <code>https://x.com/example</code></li>
-                    <li>❌ 間違い: <code>x.com/example</code></li>
-                    <li><code>https://</code> を忘れずに！</li>
+                    <li>管理者ページで「招待URLを再発行」する</li>
+                </ul>
+            </div>
+
+            <div class="warning">
+                <h3 style="margin: 0 0 15px 0;">Q3: ログインできない</h3>
+                <p><strong>原因:</strong> メール認証が未完了、またはパスワードの間違い</p>
+                <p style="margin-top: 10px;"><strong>解決:</strong></p>
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    <li>登録メールの確認リンクをクリックしたか確認</li>
+                    <li>Supabase Dashboard → Authentication → Users で状態確認</li>
+                </ul>
+            </div>
+
+            <div class="warning">
+                <h3 style="margin: 0 0 15px 0;">Q4: 管理者ページにアクセスできない</h3>
+                <p><strong>原因:</strong> is_adminフラグが設定されていない</p>
+                <p style="margin-top: 10px;"><strong>解決:</strong></p>
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    <li>Supabase SQL Editorで <code>UPDATE members SET is_admin = true WHERE id = '000001';</code> を実行</li>
+                </ul>
+            </div>
+
+            <!-- 開発ロードマップ -->
+            <h2>📅 開発ロードマップ</h2>
+
+            <div class="phase-box">
+                <p><span class="phase-number">1</span><strong>Phase 1 — 基盤</strong> <span class="badge badge-done">✅ 完成</span></p>
+                <ul style="margin-left: 60px; margin-top: 10px;">
+                    <li>認証システム（メール招待制）</li>
+                    <li>ハブページ（公開プロフィール）</li>
+                    <li>プロフィール編集</li>
+                    <li>管理者ダッシュボード</li>
+                </ul>
+            </div>
+
+            <div class="phase-box">
+                <p><span class="phase-number">2</span><strong>Phase 2 — 記録</strong> <span class="badge badge-next">🔜 次フェーズ</span></p>
+                <ul style="margin-left: 60px; margin-top: 10px;">
+                    <li>大会・試合記録の登録</li>
+                    <li>戦績統計の表示</li>
+                </ul>
+            </div>
+
+            <div class="phase-box">
+                <p><span class="phase-number">3</span><strong>Phase 3 — 収集</strong> <span class="badge badge-plan">📋 計画中</span></p>
+                <ul style="margin-left: 60px; margin-top: 10px;">
+                    <li>カードコレクション機能（QRスキャンで相互登録）</li>
+                    <li>コレクション数の表示</li>
+                </ul>
+            </div>
+
+            <div class="phase-box">
+                <p><span class="phase-number">4</span><strong>Phase 4 — 実績</strong> <span class="badge badge-plan">📋 計画中</span></p>
+                <ul style="margin-left: 60px; margin-top: 10px;">
+                    <li>バッジ・称号システム</li>
+                    <li>ランキング</li>
                 </ul>
             </div>
 
             <!-- チェックリスト -->
             <h2>✅ チェックリスト</h2>
-            
+
             <h3>完成したもの</h3>
             <ul class="checklist">
-                <li class="checked">Webシステム構築</li>
-                <li class="checked">Googleスプレッドシート連携</li>
+                <li class="checked">Webシステム構築（Next.js + Supabase）</li>
+                <li class="checked">招待制会員登録システム</li>
+                <li class="checked">メール認証</li>
+                <li class="checked">プロフィール編集機能</li>
+                <li class="checked">管理者ダッシュボード</li>
+                <li class="checked">QRコード生成・印刷</li>
                 <li class="checked">Vercelデプロイ</li>
                 <li class="checked">GitHubアップロード</li>
-                <li class="checked">カスタムドメイン設定 (DNS反映待ち)</li>
             </ul>
 
             <h3>次やること</h3>
             <ul class="checklist">
-                <li class="unchecked">DNS反映確認 (数時間後)</li>
-                <li class="unchecked">https://metalid.jp にアクセスできるか確認</li>
+                <li class="unchecked">カスタムドメイン設定（metalid.jp）</li>
+                <li class="unchecked">最初の管理者アカウント作成</li>
+                <li class="unchecked">テスト会員でフロー確認</li>
                 <li class="unchecked">カードデザイン最終調整</li>
                 <li class="unchecked">工房へ試作依頼</li>
                 <li class="unchecked">メンバーに配布</li>
@@ -535,7 +732,7 @@
 
             <!-- 用語集 -->
             <h2>📚 用語集</h2>
-            
+
             <div class="table-wrapper">
                 <table>
                     <tr>
@@ -563,8 +760,16 @@
                         <td>Webサイトを公開するサービス（無料で使える）</td>
                     </tr>
                     <tr>
-                        <td>📊 スプレッドシート</td>
-                        <td>オンライン版Excel（Googleが提供）</td>
+                        <td>🗄️ Supabase</td>
+                        <td>データベースと認証をまとめて提供するサービス（無料で使える）</td>
+                    </tr>
+                    <tr>
+                        <td>🔐 RLS</td>
+                        <td>Row Level Security：自分のデータしか見れない・編集できない仕組み</td>
+                    </tr>
+                    <tr>
+                        <td>🎫 招待トークン</td>
+                        <td>会員登録に必要な使い捨てキー（30日有効）</td>
                     </tr>
                     <tr>
                         <td>🔤 QRコード</td>
@@ -575,14 +780,15 @@
 
             <!-- まとめ -->
             <h2>🎓 まとめ</h2>
-            
+
             <div class="success">
                 <h3 style="margin: 0 0 20px 0;">このシステムの凄いところ</h3>
                 <ul style="margin-left: 20px;">
-                    <li>✅ メンバー追加が超簡単 → スプレッドシートに1行追加するだけ</li>
+                    <li>✅ 招待制なので安全 → 知らない人が勝手に登録できない</li>
+                    <li>✅ メンバーが自分で情報を更新できる → 管理者の手間ゼロ</li>
                     <li>✅ カード作り直し不要 → 情報変更してもQRコードはそのまま</li>
-                    <li>✅ 拡張性が高い → 将来的に機能追加できる</li>
-                    <li>✅ コストが安い → 年間1,500円だけ</li>
+                    <li>✅ 拡張性が高い → 将来的に試合記録・コレクション機能を追加できる</li>
+                    <li>✅ コストが安い → 年間1,500円（ドメイン代）だけ</li>
                     <li>✅ メンテナンスが楽 → 自動で動き続ける</li>
                 </ul>
             </div>
@@ -590,18 +796,19 @@
             <div class="info" style="margin-top: 40px;">
                 <h3 style="margin: 0 0 15px 0;">📞 困ったときは</h3>
                 <ol style="margin-left: 20px;">
-                    <li><strong>Googleスプレッドシート</strong> → データが正しく入力されてる？</li>
-                    <li><strong>Vercel</strong> → Build Logs でエラー確認</li>
-                    <li><strong>GitHub</strong> → コードが正しくアップロードされてる？</li>
-                    <li><strong>お名前.com</strong> → DNS設定が正しい？</li>
+                    <li><strong>ページが表示されない</strong> → 会員のstatusがactiveか確認</li>
+                    <li><strong>招待URLが無効</strong> → 管理者ページから再発行</li>
+                    <li><strong>Vercel</strong> → Deployment → Functions Logs でエラー確認</li>
+                    <li><strong>Supabase</strong> → Table Editor でデータ確認 / Auth でユーザー確認</li>
+                    <li><strong>GitHub</strong> → コードが正しくpushされてるか確認</li>
                 </ol>
             </div>
         </div>
 
         <footer>
             <p style="font-size: 24px; margin-bottom: 10px;">🎉</p>
-            <p><strong>METALID 完全図解ガイド 完成</strong></p>
-            <p style="margin-top: 10px; opacity: 0.8;">作成日: 2026年2月18日</p>
+            <p><strong>METALID 完全図解ガイド</strong></p>
+            <p style="margin-top: 10px; opacity: 0.8;">最終更新: 2026年2月18日</p>
         </footer>
     </div>
 </body>
