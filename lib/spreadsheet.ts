@@ -52,7 +52,7 @@ export async function getUserData(id: string): Promise<UserData | null> {
           const user = results.data.find((row) => row.id === id);
           resolve(user || null);
         },
-        error: (error) => {
+        error: (error: Error) => {
           console.error('CSV parse error:', error);
           resolve(null);
         }
