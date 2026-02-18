@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>METALID 完全図解ガイド</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        header p {
+            font-size: 20px;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h2 {
+            font-size: 32px;
+            margin: 50px 0 25px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            color: #667eea;
+        }
+
+        h3 {
+            font-size: 24px;
+            margin: 30px 0 15px 0;
+            color: #764ba2;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .flow-diagram {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 25px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .arrow {
+            color: #667eea;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 24px;
+        }
+
+        .step-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .comparison-item {
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .comparison-bad {
+            background: #fee;
+            border: 2px solid #f88;
+        }
+
+        .comparison-good {
+            background: #efe;
+            border: 2px solid #8f8;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 25px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding: 12px 12px 12px 40px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .checklist li.checked::before {
+            content: '✅';
+            position: absolute;
+            left: 12px;
+            font-size: 20px;
+        }
+
+        .checklist li.unchecked::before {
+            content: '⬜';
+            position: absolute;
+            left: 12px;
+            font-size: 20px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        code {
+            background: #f8f9fa;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+            font-size: 14px;
+        }
+
+        .cost-box {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .cost-box h3 {
+            color: white;
+            margin: 0 0 20px 0;
+        }
+
+        .cost-total {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .phase-box {
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .phase-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 36px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+
+        .emoji {
+            font-size: 24px;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎴 METALID 完全図解ガイド</h1>
+            <p>誰でもわかる！モルックIDカードシステムの全体像</p>
+        </header>
+
+        <div class="content">
+            <!-- これは何？ -->
+            <h2>📱 これは何？</h2>
+            <div class="card">
+                <p style="font-size: 18px;">金属製のIDカードにQRコードを印刷して、スマホでスキャンすると<strong>あなた専用のプロフィールページ</strong>が開くシステムです。</p>
+            </div>
+
+            <div class="flow-diagram">
+┌─────────────────┐
+│  金属IDカード    │
+│                 │
+│   #000001       │
+│   [写真]        │
+│   サノ          │
+│                 │
+│   [QRコード]    │  ← スマホでスキャン！
+└─────────────────┘
+         │
+         ▼
+   スマホ画面に表示
+┌─────────────────┐
+│   🌐 ブラウザ    │
+│                 │
+│      サノ       │
+│   川西モルック   │
+│                 │
+│  ┌───────────┐  │
+│  │ X (個人)  │  │
+│  └───────────┘  │
+│  ┌───────────┐  │
+│  │ MOLKKY HUB│  │
+│  └───────────┘  │
+└─────────────────┘
+            </div>
+
+            <!-- システム全体の仕組み -->
+            <h2>🌐 システム全体の仕組み</h2>
+            
+            <h3>3つのパーツ</h3>
+            <div class="phase-box">
+                <p><span class="phase-number">1</span><strong>カード（物理）</strong></p>
+                <p style="margin-left: 60px;">QRコードが印刷された金属製のカード</p>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <div class="phase-box">
+                <p><span class="phase-number">2</span><strong>インターネット（Webサイト）</strong></p>
+                <p style="margin-left: 60px;">https://metalid.jp/u/000001 でアクセス</p>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <div class="phase-box">
+                <p><span class="phase-number">3</span><strong>データ管理（Googleスプレッドシート）</strong></p>
+                <p style="margin-left: 60px;">誰がどんな情報を持っているかを記録</p>
+            </div>
+
+            <!-- データの流れ -->
+            <h2>🔄 データの流れ</h2>
+            <div class="step-box">スマホでQRスキャン</div>
+            <div class="arrow">↓</div>
+            <div class="step-box">metalid.jp/u/000001 にアクセス</div>
+            <div class="arrow">↓</div>
+            <div class="step-box">Googleスプレッドシートから<br>「000001」の人の情報を取得</div>
+            <div class="arrow">↓</div>
+            <div class="step-box">プロフィールページを表示</div>
+
+            <!-- Googleスプレッドシート -->
+            <h2>📊 Googleスプレッドシートって何？</h2>
+            <div class="info">
+                <p><strong>Excel のオンライン版</strong>です。ここにメンバーの情報を入力します。</p>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>id</th>
+                        <th>type</th>
+                        <th>name</th>
+                        <th>bio</th>
+                        <th>link1_label</th>
+                    </tr>
+                    <tr>
+                        <td>'000001</td>
+                        <td>profile</td>
+                        <td>サノ</td>
+                        <td>川西モルックの会</td>
+                        <td>X (個人)</td>
+                    </tr>
+                    <tr>
+                        <td>'000002</td>
+                        <td>profile</td>
+                        <td>太郎</td>
+                        <td>大阪モルック</td>
+                        <td>Instagram</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="success">
+                <p><strong>メンバー追加の手順:</strong></p>
+                <ol style="margin-top: 15px; margin-left: 20px;">
+                    <li>Googleスプレッドシートを開く</li>
+                    <li>新しい行に情報を入力</li>
+                    <li>保存</li>
+                    <li>完成！ → 自動的に新しいページができる</li>
+                </ol>
+            </div>
+
+            <!-- カスタムドメイン -->
+            <h2>🎯 カスタムドメインって何？</h2>
+            
+            <div class="comparison">
+                <div class="comparison-item comparison-bad">
+                    <h3 style="color: #dc3545;">❌ ドメインなし</h3>
+                    <p style="margin-top: 15px; word-break: break-all;">
+                        https://metalid-redirect.vercel.app/u/000001
+                    </p>
+                    <ul style="text-align: left; margin-top: 15px;">
+                        <li>長くて覚えにくい</li>
+                        <li>「Vercelって何？」</li>
+                        <li>QRコードが大きくなる</li>
+                    </ul>
+                </div>
+                
+                <div class="comparison-item comparison-good">
+                    <h3 style="color: #28a745;">✅ ドメインあり</h3>
+                    <p style="margin-top: 15px;">
+                        https://metalid.jp/u/000001
+                    </p>
+                    <ul style="text-align: left; margin-top: 15px;">
+                        <li>短くて覚えやすい</li>
+                        <li>カッコいい</li>
+                        <li>QRコードが小さくできる</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- コスト -->
+            <h2>💰 お金はかかるの？</h2>
+            
+            <div class="cost-box">
+                <h3>年間コスト</h3>
+                <div class="cost-total">1,500円だけ！</div>
+                <p style="font-size: 18px; opacity: 0.95;">(月125円くらい)</p>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>項目</th>
+                        <th>金額</th>
+                    </tr>
+                    <tr>
+                        <td>✅ ドメイン (metalid.jp)</td>
+                        <td><strong>1,500円/年</strong></td>
+                    </tr>
+                    <tr>
+                        <td>✅ Vercel (サーバー)</td>
+                        <td><strong style="color: #28a745;">0円（無料）</strong></td>
+                    </tr>
+                    <tr>
+                        <td>✅ GitHub (コード保存)</td>
+                        <td><strong style="color: #28a745;">0円（無料）</strong></td>
+                    </tr>
+                    <tr>
+                        <td>✅ Googleスプレッドシート</td>
+                        <td><strong style="color: #28a745;">0円（無料）</strong></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- 更新の仕方 -->
+            <h2>🔄 更新の仕方</h2>
+            
+            <h3>パターン1: メンバー追加・情報変更</h3>
+            <div class="card">
+                <div class="step-box" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                    Googleスプレッドシートを開く
+                </div>
+                <div class="arrow">↓</div>
+                <div class="step-box" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                    情報を変更 or 新しい行を追加
+                </div>
+                <div class="arrow">↓</div>
+                <div class="step-box" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                    保存
+                </div>
+                <div class="arrow">↓</div>
+                <div class="step-box" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                    1分以内に自動反映！
+                </div>
+                <p style="margin-top: 15px;"><strong>必要なもの:</strong> スマホかPC（Googleスプレッドシートが開ければOK）</p>
+            </div>
+
+            <!-- トラブルシューティング -->
+            <h2>🛠️ よくあるトラブル</h2>
+            
+            <div class="warning">
+                <h3 style="margin: 0 0 15px 0;">Q1: ページが表示されない</h3>
+                <p><strong>原因:</strong> スプレッドシートのID設定ミス</p>
+                <p style="margin-top: 10px;"><strong>解決:</strong></p>
+                <ol style="margin-left: 20px; margin-top: 5px;">
+                    <li>スプレッドシートのid列を確認</li>
+                    <li><code>'000001</code> のようにシングルクォート付けてる？</li>
+                    <li>数字だけだと <code>1</code> になってしまう</li>
+                </ol>
+            </div>
+
+            <div class="warning">
+                <h3 style="margin: 0 0 15px 0;">Q2: リンクが動かない</h3>
+                <p><strong>原因:</strong> URLの形式が間違ってる</p>
+                <p style="margin-top: 10px;"><strong>解決:</strong></p>
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    <li>✅ 正しい: <code>https://x.com/example</code></li>
+                    <li>❌ 間違い: <code>x.com/example</code></li>
+                    <li><code>https://</code> を忘れずに！</li>
+                </ul>
+            </div>
+
+            <!-- チェックリスト -->
+            <h2>✅ チェックリスト</h2>
+            
+            <h3>完成したもの</h3>
+            <ul class="checklist">
+                <li class="checked">Webシステム構築</li>
+                <li class="checked">Googleスプレッドシート連携</li>
+                <li class="checked">Vercelデプロイ</li>
+                <li class="checked">GitHubアップロード</li>
+                <li class="checked">カスタムドメイン設定 (DNS反映待ち)</li>
+            </ul>
+
+            <h3>次やること</h3>
+            <ul class="checklist">
+                <li class="unchecked">DNS反映確認 (数時間後)</li>
+                <li class="unchecked">https://metalid.jp にアクセスできるか確認</li>
+                <li class="unchecked">カードデザイン最終調整</li>
+                <li class="unchecked">工房へ試作依頼</li>
+                <li class="unchecked">メンバーに配布</li>
+            </ul>
+
+            <!-- 用語集 -->
+            <h2>📚 用語集</h2>
+            
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th style="width: 30%;">用語</th>
+                        <th>簡単な説明</th>
+                    </tr>
+                    <tr>
+                        <td>🌐 ドメイン</td>
+                        <td>インターネット上の住所（metalid.jp みたいなやつ）</td>
+                    </tr>
+                    <tr>
+                        <td>🖥️ サーバー</td>
+                        <td>Webサイトを動かすコンピュータ（Vercel が用意してくれてる）</td>
+                    </tr>
+                    <tr>
+                        <td>📝 DNS</td>
+                        <td>ドメインとサーバーを繋ぐ設定（住所録みたいなもの）</td>
+                    </tr>
+                    <tr>
+                        <td>💻 GitHub</td>
+                        <td>プログラムのコードを保存する場所（Googleドライブのコード版）</td>
+                    </tr>
+                    <tr>
+                        <td>⚡ Vercel</td>
+                        <td>Webサイトを公開するサービス（無料で使える）</td>
+                    </tr>
+                    <tr>
+                        <td>📊 スプレッドシート</td>
+                        <td>オンライン版Excel（Googleが提供）</td>
+                    </tr>
+                    <tr>
+                        <td>🔤 QRコード</td>
+                        <td>スマホで読み取れる四角い模様（URLを埋め込める）</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- まとめ -->
+            <h2>🎓 まとめ</h2>
+            
+            <div class="success">
+                <h3 style="margin: 0 0 20px 0;">このシステムの凄いところ</h3>
+                <ul style="margin-left: 20px;">
+                    <li>✅ メンバー追加が超簡単 → スプレッドシートに1行追加するだけ</li>
+                    <li>✅ カード作り直し不要 → 情報変更してもQRコードはそのまま</li>
+                    <li>✅ 拡張性が高い → 将来的に機能追加できる</li>
+                    <li>✅ コストが安い → 年間1,500円だけ</li>
+                    <li>✅ メンテナンスが楽 → 自動で動き続ける</li>
+                </ul>
+            </div>
+
+            <div class="info" style="margin-top: 40px;">
+                <h3 style="margin: 0 0 15px 0;">📞 困ったときは</h3>
+                <ol style="margin-left: 20px;">
+                    <li><strong>Googleスプレッドシート</strong> → データが正しく入力されてる？</li>
+                    <li><strong>Vercel</strong> → Build Logs でエラー確認</li>
+                    <li><strong>GitHub</strong> → コードが正しくアップロードされてる？</li>
+                    <li><strong>お名前.com</strong> → DNS設定が正しい？</li>
+                </ol>
+            </div>
+        </div>
+
+        <footer>
+            <p style="font-size: 24px; margin-bottom: 10px;">🎉</p>
+            <p><strong>METALID 完全図解ガイド 完成</strong></p>
+            <p style="margin-top: 10px; opacity: 0.8;">作成日: 2026年2月18日</p>
+        </footer>
+    </div>
+</body>
+</html>
